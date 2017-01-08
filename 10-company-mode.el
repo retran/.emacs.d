@@ -1,6 +1,8 @@
 (use-package company
   :ensure t
-  :diminish company-mode)
+  :diminish company-mode
+  :config
+  (setq company-require-match nil))
 
 (use-package company-quickhelp
   :ensure t

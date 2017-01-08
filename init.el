@@ -11,9 +11,11 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(eclim-eclipse-dirs (quote ("~/eclipse")))
+ '(eclim-executable "~/eclipse/eclim")
  '(package-selected-packages
    (quote
-    (company general git-gutter-fringe+ linum-relative winum which-key evil counsel ivy gotham-theme color-theme smart-mode-line exec-path-from-shell use-package))))
+    (flycheck company-emacs-eclim company general git-gutter-fringe+ linum-relative winum which-key evil counsel ivy gotham-theme color-theme smart-mode-line exec-path-from-shell use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
