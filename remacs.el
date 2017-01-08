@@ -8,6 +8,6 @@
 (load-file "~/.emacs.d/10-company-mode.el")
 
 (load-file "~/.emacs.d/31-elisp-mode.el")
-(load-file "~/.emacs.d/32-ensime.el")
+(load-file "~/.emacs.d/32-eclim.el")
 
 (load-file "~/.emacs.d/99-misc.el")
