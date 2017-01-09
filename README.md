@@ -2,8 +2,6 @@ My new shiny emacs config (inspired by spacemacs).
 
 TODO:
 
-- flycheck
-
 - magit
 
 - projectile
@@ -15,6 +13,10 @@ TODO:
 - language modes:
 
   - java
+  
+    - debugger
+
+    - better navigation
 
   - typescript
 

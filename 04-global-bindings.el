@@ -57,5 +57,10 @@
    "gl" 'avy-goto-line
    "SPC" 'avy-goto-word-1
    "gb" 'pop-global-mark
+
+   ;; vcs
+   "vv" 'magit-status
+   "vb" 'magit-blame
+   "vl" 'magit-log-current
    )
 )

@@ -9,6 +9,8 @@
 (load-file "~/.emacs.d/11-yas.el")
 (load-file "~/.emacs.d/12-flycheck.el")
 
+(load-file "~/.emacs.d/21-magit.el")
+
 (load-file "~/.emacs.d/31-elisp-mode.el")
 (load-file "~/.emacs.d/32-eclim.el")
 
