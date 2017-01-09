@@ -44,3 +44,34 @@
   :ensure t
   :init
   (company-emacs-eclim-setup))
+
+(general-define-key
+ :keymaps 'eclim-mode-map
+ :states '(normal)
+ :prefix "SPC"
+
+ ;; navigation
+ "gg" 'eclim-java-find-declaration
+ "gs" 'eclim-java-find-generic
+ "gr" 'eclim-java-find-references
+ "gt" 'eclim-java-find-type
+ "gc" 'eclim-java-call-hierarchy
+ "gh" 'eclim-java-hierarchy
+
+ ;; refactor
+ "rr" 'eclim-java-refactor-rename-symbol-at-point
+ "rm" 'eclim-java-refactor-move-class
+ "ri" 'eclim-java-import-organize
+ "re" 'eclim-java-implement
+ "rg" 'eclim-java-generate-getter
+ "rs" 'eclim-java-generate-setter
+ "rb" 'eclim-java-generate-getter-and-setter
+ "rc" 'eclim-java-constructor
+ 
+ ;; problems
+ "cc" 'eclim-problems-correct
+ "ca" 'eclim-problems
+
+ ;; formatting
+ "Ff" 'eclim-java-format
+ )

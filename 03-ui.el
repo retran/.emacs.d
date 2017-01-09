@@ -6,7 +6,7 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
-(set-frame-font "Consolas 12")
+(set-frame-font "Consolas 13")
 (blink-cursor-mode 1)
 (set-default 'cursor-type 'bar)
 (fset 'yes-or-no-p 'y-or-n-p)
@@ -67,6 +67,9 @@
   :init
   (evil-mode 1)
   (setq sentence-end-double-space nil))
+
+(use-package avy
+  :ensure t)
 
 (use-package which-key
   :ensure t
