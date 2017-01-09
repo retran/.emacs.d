@@ -15,7 +15,7 @@
  '(eclim-executable "~/eclipse/eclim")
  '(package-selected-packages
    (quote
-    (evil-magit magit flycheck company-emacs-eclim company general git-gutter-fringe+ linum-relative winum which-key evil counsel ivy gotham-theme color-theme smart-mode-line exec-path-from-shell use-package))))
+    (counsel-projectile projectile evil-magit magit flycheck company-emacs-eclim company general git-gutter-fringe+ linum-relative winum which-key evil counsel ivy gotham-theme color-theme smart-mode-line exec-path-from-shell use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

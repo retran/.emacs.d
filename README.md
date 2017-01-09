@@ -2,10 +2,6 @@ My new shiny emacs config (inspired by spacemacs).
 
 TODO:
 
-- magit
-
-- projectile
-
 - markdown
 
 - org

@@ -22,6 +22,10 @@
    
    ;; file
    "ff" 'counsel-find-file
+   "fp" 'counsel-projectile
+
+   ;; search
+   "ss" 'counsel-projectile-ag
 
    ;; formatting
    "Fw" 'whitespace-cleanup
