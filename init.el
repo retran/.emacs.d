@@ -60,58 +60,58 @@
 (column-number-mode t)
 (global-linum-mode t)
 (global-hl-line-mode)
-(setq hl-line-sticky-flag nil)
 (setq show-paren-style 'parenthesis)
 (show-paren-mode 2)
 
-(use-package smart-mode-line
-  :ensure t
-  :init
-  (progn
-    (rich-minority-mode 1)
-    (setf rm-blacklist "")
-    (setq sml/no-confirm-load-theme t)
-    (sml/setup)))
-
 (use-package color-theme
-  :ensure t)
+  :ensure t
+  :config
+  (use-package gotham-theme
+    :ensure t
+    :config
+    (progn
+      (use-package powerline
+        :ensure t
+        :config
+        (powerline-center-evil-theme))
+      
+      (defun remacs|load-theme (theme)
+        (load-theme theme t)
+        (powerline-reset))
+    
+      (defun remacs|light-theme ()
+        (interactive)
+        (remacs|load-theme 'leuven))
+    
+      (defun remacs|dark-theme ()
+        (interactive)
+        (remacs|load-theme 'gotham))
 
-(use-package gotham-theme
-  :ensure t)
+      (general-define-key
+       :states '(normal visual)
+       :prefix "SPC"
+       "Tl" 'remacs|light-theme
+       "Td" 'remacs|dark-theme)
+      
+      (remacs|dark-theme))))
 
-(defadvice load-theme (before theme-dont-propagate activate)
- (mapc #'disable-theme custom-enabled-themes))
-
-(defun remacs-load-theme (theme)
-  (load-theme theme t)
-  )
-
-(defun remacs-light-theme ()
-  (interactive)
-  (remacs-load-theme 'leuven))
-
-(defun remacs-dark-theme ()
-  (interactive)
-  (remacs-load-theme 'gotham))
-
-(remacs-dark-theme)
 
 (use-package ivy
   :ensure t
   :diminish ivy-mode
-  :init
-  (ivy-mode 1)
   :config
-  (setq ivy-use-virtual-buffers t))
-
-(use-package counsel
-  :ensure t)
+  (progn
+    (setq ivy-use-virtual-buffers t)
+    (use-package counsel
+      :ensure t)
+    (ivy-mode t)))
 
 (use-package evil
   :ensure t
-  :init
-  (evil-mode 1)
-  (setq sentence-end-double-space nil))
+  :config
+  (progn
+    (setq sentence-end-double-space nil)
+    (evil-mode t)))
 
 (use-package avy
   :ensure t)
@@ -119,53 +119,59 @@
 (use-package which-key
   :ensure t
   :diminish which-key-mode
-  :init
-  (which-key-setup-minibuffer)
-  (which-key-mode))
+  :config
+  (progn
+    (which-key-setup-minibuffer)
+    (which-key-mode)))
 
 (use-package winum
   :ensure t
-  :init
-  (winum-mode)
-  (winner-mode))
-
-(use-package linum-relative
-  :ensure t)
-
-(use-package git-gutter-fringe+
-  :ensure t
-  :diminish git-gutter+-mode
   :config
-  (setq git-gutter-fr+-side 'right-fringe)
-  (git-gutter-fr+-minimal)
-  :init
-  (global-git-gutter+-mode))
+  (progn
+    (general-define-key
+     :states '(normal visual)
+     :prefix "SPC"
+     "0" 'winum-select-window-0-or-10
+     "1" 'winum-select-window-1
+     "2" 'winum-select-window-2
+     "3" 'winum-select-window-3
+     "4" 'winum-select-window-4
+     "5" 'winum-select-window-5
+     "6" 'winum-select-window-6
+     "7" 'winum-select-window-7
+     "8" 'winum-select-window-8
+     "9" 'winum-select-window-9
+     "wd" 'delete-window
+     "wv" 'split-window-vertically
+     "wh" 'split-window-horizontally
+     "wm" 'delete-other-windows
+     "wb" 'balance-windows
+     "wu" 'winner-undo
+     "wr" 'winner-redo)
+    (winum-mode)
+    (winner-mode)))
+
+(use-package linum
+  :ensure t
+  :config
+  (progn
+    (use-package linum-relative
+      :ensure t)))
 
 
 (setq-default indent-tabs-mode nil)
 
-(use-package general :ensure t
+(use-package general
+  :ensure t
   :config
   (general-evil-setup t)
   (general-define-key
-   :states '(normal)
+   :states '(normal visual)
    :prefix "SPC"
    
    ":" 'counsel-M-x
    "/" 'swiper
 
-   ;; winum
-   "0" 'winum-select-window-0-or-10
-   "1" 'winum-select-window-1
-   "2" 'winum-select-window-2
-   "3" 'winum-select-window-3
-   "4" 'winum-select-window-4
-   "5" 'winum-select-window-5
-   "6" 'winum-select-window-6
-   "7" 'winum-select-window-7
-   "8" 'winum-select-window-8
-   "9" 'winum-select-window-9
-   
    ;; file
    "ff" 'counsel-find-file
    "fp" 'counsel-projectile
@@ -186,35 +192,17 @@
    "bp" 'previous-buffer
    "<tab>" 'mode-line-other-buffer
 
-   ;; window
-   "wd" 'delete-window
-   "wv" 'split-window-vertically
-   "wh" 'split-window-horizontally
-   "wm" 'delete-other-windows
-   "wb" 'balance-windows
-   "wu" 'winner-undo
-   "wr" 'winner-redo
-
    ;; toggle
    "tn" 'linum-mode
    "tw" 'whitespace-mode
    "tr" 'linum-relative-toggle
    "tg" 'git-gutter+-mode
 
-   ;; themes
-   "Tl" 'remacs-light-theme
-   "Td" 'remacs-dark-theme
-
    ;; navigation
    "gc" 'avy-goto-char
    "gl" 'avy-goto-line
    "SPC" 'avy-goto-word-1
    "gb" 'pop-global-mark
-
-   ;; vcs
-   "vv" 'magit-status
-   "vb" 'magit-blame
-   "vl" 'magit-log-current
    )
 )
 
@@ -222,36 +210,183 @@
   :ensure t
   :diminish company-mode
   :config
-  (setq company-require-match nil))
-
-(use-package company-quickhelp
-  :ensure t
-  :init
-  (company-quickhelp-mode 1))
+  (progn
+    (setq company-require-match nil)
+    (use-package company-quickhelp
+      :ensure t
+      :config
+      (company-quickhelp-mode 1))))
 
 (use-package yasnippet
   :ensure t
-  :init
+  :diminish yas-minor-mode
+  :config
   (yas-global-mode 1))
 
 (use-package flycheck
   :ensure t
-  :init (global-flycheck-mode))
+  :diminish flycheck-mode
+  :config
+  (global-flycheck-mode))
 
 (use-package projectile
   :ensure t
-  :init
-  (projectile-global-mode t))
+  :config
+  (progn
+    (projectile-mode t)
+    (use-package counsel-projectile
+      :ensure t)))
 
-(use-package counsel-projectile
-  :ensure t)
-
+;; configure git modes
 (use-package magit
-  :ensure t)
+  :ensure t
+  :config
+  (progn
+    (use-package evil-magit
+      :ensure t)
+    (general-define-key
+     :states '(normal visual)
+     :prefix "SPC"
+     "vv" 'magit-status
+     "vb" 'magit-blame
+     "vl" 'magit-log-current)
+    (use-package git-gutter-fringe+
+      :ensure t
+      :diminish git-gutter+-mode
+      :config
+      (progn
+        (setq git-gutter-fr+-side 'right-fringe)
+        (git-gutter-fr+-minimal)
+        (global-git-gutter+-mode)))
+    (use-package git-auto-commit-mode
+      :ensure t
+      :config
+      (setq gac-ask-for-summary-p nil))))
 
-(use-package evil-magit
-  :ensure t)
+;; org-mode configuration
 
+
+
+;; org-evil !!!
+
+
+(use-package org
+  :ensure t
+  :init
+  (setq remacs|log-path (expand-file-name "~/notes/log/"))
+  (setq remacs|backlog-file (expand-file-name "~/notes/log/backlog.org"))
+
+  (setq org-agenda-files `(,remacs|log-path))
+  (setq org-refile-targets
+      '((nil :maxlevel . 1)
+        (org-agenda-files :maxlevel . 1)))
+  (setq org-refile-use-outline-path 'file)
+  :config
+  (defun remacs|reorder-date (date)
+    (list (nth 2 date)
+          (nth 0 date)
+          (nth 1 date)))
+
+  (defun remacs|filename-for-date (date)
+    (concat remacs|log-path
+            (format "L%s.org"
+                    (string-join
+                     (mapcar
+                      (lambda (i) (format "%02d" i))
+                      (remacs|reorder-date date))
+                     ""))))
+
+  (defun remacs|format-date (date)
+    (string-join (mapcar (lambda (i) (format "%02d" i)) date) "-"))
+
+  (defun remacs|log-entry-header (date)
+    (let ((date-short (remacs|format-date (remacs|reorder-date date)))
+          (date-long (calendar-date-string date)))
+      (format
+       "#+TITLE: %s\n#+AUTHOR: %s\n#+DATE: %s\n#+FILETAGS: log\n\n"
+       date-long
+       user-full-name
+       date-short)))
+
+  (defun remacs|insert-log-entry-header (&optional date)
+    (interactive)
+    (insert
+     (remacs|log-entry-header
+      (if date date (calendar-current-date)))))
+
+  (defun remacs|prompt-for-date ()
+    (let ((decoded
+           (decode-time
+            (org-time-string-to-time (org-read-date)))))
+      (list (nth 4 decoded)
+            (nth 3 decoded)
+            (nth 5 decoded))))
+
+  (defun remacs|insert-log-entry-header-with-specified-date ()
+    (interactive)
+    (remacs|insert-log-entry-header (remacs|prompt-for-date)))
+
+  (defun remacs|refile-to (file)
+    (let ((pos (save-excursion
+                 (find-file file)
+                 (end-of-buffer))))
+      (org-refile nil nil
+                  (list nil file nil pos))))
+
+  (defun remacs|refile-to-backlog ()
+    (interactive)
+    (org-mark-ring-push)
+    (remacs|refile-to remacs|backlog-file)
+    (org-mark-ring-goto))
+
+  (defun remacs|refile (&optional date)
+    (interactive)
+    (org-mark-ring-push)
+    (remacs|open-log-entry date)
+    (org-mark-ring-goto)
+    (org-mark-ring-push)
+    (remacs|refile-to (remacs|filename-for-date
+                       (if date date (calendar-current-date))))
+    (org-mark-ring-goto))
+
+  (defun remacs|refile-to-specified-date ()
+    (interactive)
+    (remacs|refile (remacs|prompt-for-date)))
+
+  (defun remacs|open-backlog ()
+    (interactive)
+    (find-file remacs|backlog-file))
+
+  (defun remacs|open-log-entry (&optional date)
+    (interactive)
+    (let* ((filename
+           (remacs|filename-for-date
+            (if date date (calendar-current-date))))
+           (new-file (not (file-exists-p filename))))
+      (find-file filename)
+      (when new-file
+        (remacs|insert-log-entry-header date))))
+
+  (defun remacs|open-log-entry-to-specified-date ()
+    (interactive)
+    (remacs|open-log-entry (remacs|prompt-for-date)))
+  
+  (general-define-key
+   :states '(normal visual)
+   :prefix "SPC"
+   "aa" 'remacs|open-log-entry
+   "ad" 'remacs|open-log-entry-to-specified-date
+   "ab" 'remacs|open-backlog)
+
+  (general-define-key
+   :keymaps 'org-mode-map
+   :states '(normal visual)
+   :prefix "SPC"
+   "arb" 'remacs|refile-to-backlog
+   "arr" 'remacs|refile
+   "ard" 'remacs|refile-to-specified-date))
+
+;; elisp-mode configuration
 (diminish 'eldoc-mode)
 
 (add-hook 'emacs-lisp-mode-hook 'company-mode)
@@ -263,83 +398,77 @@
 (eval-after-load 'company
   '(add-to-list 'company-backends 'company-elisp))
 
-(custom-set-variables
-  '(eclim-eclipse-dirs '("~/eclipse"))
-  '(eclim-executable "~/eclipse/eclim"))
-
-;; https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Blang/java/funcs.el
-(defun spacemacs/java-completing-dot ()
-  "Insert a period and show company completions."
-  (interactive "*")
-  (spacemacs//java-delete-horizontal-space)
-  (insert ".")
-  (company-emacs-eclim 'interactive))
-
-;; https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Blang/java/funcs.el
-(defun spacemacs/java-completing-double-colon ()
-  "Insert double colon and show company completions."
-  (interactive "*")
-  (spacemacs//java-delete-horizontal-space)
-  (insert ":")
-  (let ((curr (point)))
-    (when (s-matches? (buffer-substring (- curr 2) (- curr 1)) ":")
-      (company-emacs-eclim 'interactive))))
-
-;; https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Blang/java/funcs.el
-(defun spacemacs//java-delete-horizontal-space ()
-  (when (s-matches? (rx (+ (not space)))
-                    (buffer-substring (line-beginning-position) (point)))
-    (delete-horizontal-space t)))
-
-(add-hook 'java-mode-hook 'company-mode)
-
+;; java-mode configuration
 (use-package eclim
   :ensure t
   :init
-  (global-eclim-mode)
+  (custom-set-variables
+   '(eclim-eclipse-dirs '("~/eclipse"))
+   '(eclim-executable "~/eclipse/eclim"))
   :config
-  (setq help-at-pt-display-when-idle t
-        help-at-pt-timer-delay 0.1)
-  (help-at-pt-set-timer)
-  (evil-define-key 'insert java-mode-map
-    (kbd ".") 'spacemacs/java-completing-dot
-    (kbd ":") 'spacemacs/java-completing-double-colon))
+  (progn
+    ;; https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Blang/java/funcs.el
+    (defun spacemacs/java-completing-dot ()
+      "Insert a period and show company completions."
+      (interactive "*")
+      (spacemacs//java-delete-horizontal-space)
+      (insert ".")
+      (company-emacs-eclim 'interactive))
 
-(use-package company-emacs-eclim
-  :ensure t
-  :init
-  (company-emacs-eclim-setup))
+    ;; https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Blang/java/funcs.el
+    (defun spacemacs/java-completing-double-colon ()
+      "Insert double colon and show company completions."
+      (interactive "*")
+      (spacemacs//java-delete-horizontal-space)
+      (insert ":")
+      (let ((curr (point)))
+        (when (s-matches? (buffer-substring (- curr 2) (- curr 1)) ":")
+          (company-emacs-eclim 'interactive))))
 
-(general-define-key
- :keymaps 'eclim-mode-map
- :states '(normal)
- :prefix "SPC"
-
- ;; navigation
- "gg" 'eclim-java-find-declaration
- "gs" 'eclim-java-find-generic
- "gr" 'eclim-java-find-references
- "gt" 'eclim-java-find-type
- "gc" 'eclim-java-call-hierarchy
- "gh" 'eclim-java-hierarchy
- "gm" 'counsel-imenu
-
- ;; refactor
- "rr" 'eclim-java-refactor-rename-symbol-at-point
- "rm" 'eclim-java-refactor-move-class
- "ri" 'eclim-java-import-organize
- "re" 'eclim-java-implement
- "rg" 'eclim-java-generate-getter
- "rs" 'eclim-java-generate-setter
- "rb" 'eclim-java-generate-getter-and-setter
- "rc" 'eclim-java-constructor
- 
- ;; problems
- "cc" 'eclim-problems-correct
- "ca" 'eclim-problems
-
- ;; formatting
- "Ff" 'eclim-java-format
- )
+    ;; https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Blang/java/funcs.el
+    (defun spacemacs//java-delete-horizontal-space ()
+      (when (s-matches? (rx (+ (not space)))
+                        (buffer-substring (line-beginning-position) (point)))
+        (delete-horizontal-space t)))
+    
+    (setq help-at-pt-display-when-idle t
+          help-at-pt-timer-delay 0.1)
+    (help-at-pt-set-timer)
+    (global-eclim-mode)
+    (evil-define-key 'insert java-mode-map
+      (kbd ".") 'spacemacs/java-completing-dot
+      (kbd ":") 'spacemacs/java-completing-double-colon)
+    (general-define-key
+     :keymaps 'eclim-mode-map
+     :states '(normal visual)
+     :prefix "SPC"
+     ;; navigation
+     "gg" 'eclim-java-find-declaration
+     "gs" 'eclim-java-find-generic
+     "gr" 'eclim-java-find-references
+     "gt" 'eclim-java-find-type
+     "gc" 'eclim-java-call-hierarchy
+     "gh" 'eclim-java-hierarchy
+     "gm" 'counsel-imenu
+     ;; refactor
+     "rr" 'eclim-java-refactor-rename-symbol-at-point
+     "rm" 'eclim-java-refactor-move-class
+     "ri" 'eclim-java-import-organize
+     "re" 'eclim-java-implement
+     "rg" 'eclim-java-generate-getter
+     "rs" 'eclim-java-generate-setter
+     "rb" 'eclim-java-generate-getter-and-setter
+     "rc" 'eclim-java-constructor
+     ;; problems
+     "cc" 'eclim-problems-correct
+     "ca" 'eclim-problems
+     ;; formatting
+     "Ff" 'eclim-java-format)
+    (use-package company-emacs-eclim
+      :ensure t
+      :config
+      (company-emacs-eclim-setup)
+      (add-hook 'java-mode-hook 'company-mode))))
 
 (provide 'init)
+;;; init.el ends here
