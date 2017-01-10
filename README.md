@@ -14,6 +14,8 @@ TODO:
 
     - better navigation
 
+    - counsel-imenu
+
   - typescript
 
   - elisp
