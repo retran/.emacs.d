@@ -6,6 +6,8 @@ TODO:
 
 - org
 
+- ctags
+
 - language modes:
 
   - java
