@@ -264,11 +264,7 @@
       (setq gac-ask-for-summary-p nil))))
 
 ;; org-mode configuration
-
-
-
 ;; org-evil !!!
-
 
 (use-package org
   :ensure t
@@ -281,6 +277,10 @@
       '((nil :maxlevel . 1)
         (org-agenda-files :maxlevel . 1)))
   (setq org-refile-use-outline-path 'file)
+  (setq org-default-notes-file remacs|backlog-file)
+  (setq org-capture-templates
+        '(("t" "TODO" entry (file remacs|backlog-file)
+           "* TODO %?\n  %i\n")))
   :config
   (defun remacs|reorder-date (date)
     (list (nth 2 date)
@@ -335,19 +335,23 @@
 
   (defun remacs|refile-to-backlog ()
     (interactive)
+    (org-schedule '(4))
     (org-mark-ring-push)
     (remacs|refile-to remacs|backlog-file)
     (org-mark-ring-goto))
 
   (defun remacs|refile (&optional date)
     (interactive)
-    (org-mark-ring-push)
-    (remacs|open-log-entry date)
-    (org-mark-ring-goto)
-    (org-mark-ring-push)
-    (remacs|refile-to (remacs|filename-for-date
-                       (if date date (calendar-current-date))))
-    (org-mark-ring-goto))
+    (let ((d (if date date (calendar-current-date))))
+      (org-schedule
+       t (remacs|format-date (remacs|reorder-date d)))
+      (org-mark-ring-push)
+      (remacs|open-log-entry d)
+      (org-mark-ring-goto)
+      (org-mark-ring-push)
+      (remacs|refile-to
+       (remacs|filename-for-date d))
+      (org-mark-ring-goto)))
 
   (defun remacs|refile-to-specified-date ()
     (interactive)
@@ -370,10 +374,16 @@
   (defun remacs|open-log-entry-to-specified-date ()
     (interactive)
     (remacs|open-log-entry (remacs|prompt-for-date)))
+
+  (defun remacs|capture-task ()
+    (interactive)
+    (org-capture nil "t"))
   
   (general-define-key
    :states '(normal visual)
    :prefix "SPC"
+   "at" 'org-tags-view
+   "an" 'remacs|capture-task
    "aa" 'remacs|open-log-entry
    "ad" 'remacs|open-log-entry-to-specified-date
    "ab" 'remacs|open-backlog)
@@ -382,8 +392,11 @@
    :keymaps 'org-mode-map
    :states '(normal visual)
    :prefix "SPC"
+   "ac" 'org-clock-in
+   "ao" 'org-clock-out
+   
    "arb" 'remacs|refile-to-backlog
-   "arr" 'remacs|refile
+   "ara" 'remacs|refile
    "ard" 'remacs|refile-to-specified-date))
 
 ;; elisp-mode configuration

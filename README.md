@@ -4,8 +4,6 @@ TODO:
 
 - markdown
 
-- org
-
 - ctags
 
 - language modes:
