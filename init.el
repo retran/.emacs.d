@@ -1,4 +1,4 @@
-;;; init.el --- Personal emacs configuraiton of Andrew Vasilyev
+;;; init.el --- Personal emacs configuration of Andrew Vasilyev
 
 ;;; Commentary:
 
