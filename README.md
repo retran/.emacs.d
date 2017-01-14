@@ -4,17 +4,11 @@ TODO:
 
 - markdown
 
-- ctags
-
 - language modes:
 
   - java
   
     - debugger
-
-    - better navigation
-
-    - counsel-imenu
 
   - typescript
 
