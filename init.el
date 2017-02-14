@@ -20,7 +20,7 @@
 (setq package-archives
       (append package-archives
 	      '(("melpa" . "http://melpa.org/packages/")
-                ("melpa-stable" . "http://stable.melpa.org/packages/")
+;;                ("melpa-stable" . "http://stable.melpa.org/packages/")
 		("marmalade" . "http://marmalade-repo.org/packages/")
 		("gnu" . "http://elpa.gnu.org/packages/")
 		("elpy" . "http://jorgenschaefer.github.io/packages/"))))
@@ -251,7 +251,7 @@
      :prefix "SPC"
      "vv" 'magit-status
      "vb" 'magit-blame
-     "vl" 'magit-log-current)
+     "vl" 'magit-log-buffer-file)
     (use-package git-gutter-fringe+
       :ensure t
       :diminish git-gutter+-mode
@@ -325,13 +325,15 @@
                  (find-file file)
                  (end-of-buffer))))
       (org-refile nil nil
-                  (list nil file nil pos))))
+                  (list nil file nil pos))
+      (save-buffer)))
   (defun remacs|refile-to-backlog ()
     (interactive)
     (org-schedule '(4))
     (org-mark-ring-push)
     (remacs|refile-to remacs|backlog-file)
-    (org-mark-ring-goto))
+    (org-mark-ring-goto)
+    (save-buffer))
   (defun remacs|refile (&optional date)
     (interactive)
     (let ((d (if date date (calendar-current-date))))
@@ -343,7 +345,8 @@
       (org-mark-ring-push)
       (remacs|refile-to
        (remacs|filename-for-date d))
-      (org-mark-ring-goto)))
+      (org-mark-ring-goto)
+      (save-buffer))
   (defun remacs|refile-to-specified-date ()
     (interactive)
     (remacs|refile (remacs|prompt-for-date)))
@@ -358,7 +361,8 @@
            (new-file (not (file-exists-p filename))))
       (find-file filename)
       (when new-file
-        (remacs|insert-log-entry-header date))))
+        (remacs|insert-log-entry-header date)
+        (save-buffer))))
   (defun remacs|open-log-entry-to-specified-date ()
     (interactive)
     (remacs|open-log-entry (remacs|prompt-for-date)))
@@ -465,8 +469,7 @@
 
 ;; scala
 (use-package ensime
-  :ensure t
-  :pin melpa-stable)
+  :ensure t)
 
 ;;
 (use-package anaconda-mode
@@ -485,9 +488,10 @@
           '(add-to-list 'company-backends 'company-anaconda))
         (add-hook 'python-mode-hook 'company-mode)))))
 
+;; c/c++
+
 (require 'irony-eldoc)
 
-;; c/c++
 (use-package irony
   :ensure t
   :config
@@ -507,6 +511,26 @@
       :config
       (progn
         '(add-hook 'flycheck-mode-hook 'flycheck-irony-setup)))))
+
+;; typescript
+
+(use-package tide
+  :ensure t
+  :config
+  (progn
+    (defun setup-tide-mode ()
+      (interactive)
+  (tide-setup)
+   (flycheck-mode +1)
+   (setq flycheck-check-syntax-automatically '(save mode-enabled))
+   (eldoc-mode +1)
+   (tide-hl-identifier-mode +1)
+   (company-mode +1))
+    (setq company-tooltip-align-annotations t)
+    (add-hook 'before-save-hook 'tide-format-before-save)
+    (add-hook 'typescript-mode-hook #'setup-tide-mode)
+    (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t
+                                :placeOpenBraceOnNewLineForFunctions nil))))
 
 (provide 'init)
 ;;; init.el ends here
