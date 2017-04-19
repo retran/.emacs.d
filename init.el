@@ -20,7 +20,6 @@
 (setq package-archives
       (append package-archives
 	      '(("melpa" . "http://melpa.org/packages/")
-;;                ("melpa-stable" . "http://stable.melpa.org/packages/")
 		("marmalade" . "http://marmalade-repo.org/packages/")
 		("gnu" . "http://elpa.gnu.org/packages/")
 		("elpy" . "http://jorgenschaefer.github.io/packages/"))))
@@ -160,7 +159,6 @@
   (progn
     (use-package linum-relative
       :ensure t)))
-
 
 (setq-default indent-tabs-mode nil)
 
@@ -467,53 +465,7 @@
       (company-emacs-eclim-setup)
       (add-hook 'java-mode-hook 'company-mode))))
 
-;; scala
-(use-package ensime
-  :ensure t)
-
-;;
-(use-package anaconda-mode
-  :ensure t
-  :init
-  (progn
-    (add-hook 'python-mode-hook 'anaconda-mode)
-    (add-hook 'python-mode-hook 'anaconda-eldoc-mode))
-  :config
-  (progn
-    (use-package company-anaconda
-      :ensure t
-      :init
-      (progn
-        (eval-after-load "company"
-          '(add-to-list 'company-backends 'company-anaconda))
-        (add-hook 'python-mode-hook 'company-mode)))))
-
-;; c/c++
-
-(require 'irony-eldoc)
-
-(use-package irony
-  :ensure t
-  :config
-  (progn
-    (add-hook 'c-mode-hook 'irony-mode)
-    (add-hook 'c++-mode-hook 'irony-mode)
-    (use-package company-irony
-      :ensure t
-      :config
-      (progn
-        (eval-after-load 'company
-          '(add-to-list 'company-backends 'company-irony))
-        (add-hook 'irony-mode 'company-mode)
-        (add-hook 'irony-mode 'irony-eldoc)))
-    (use-package flycheck-irony
-      :ensure t
-      :config
-      (progn
-        '(add-hook 'flycheck-mode-hook 'flycheck-irony-setup)))))
-
 ;; typescript
-
 (use-package tide
   :ensure t
   :config
@@ -531,6 +483,15 @@
     (add-hook 'typescript-mode-hook #'setup-tide-mode)
     (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t
                                 :placeOpenBraceOnNewLineForFunctions nil))))
+
+;; markdown
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode)
+         ("\\.md\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
+  :init (setq markdown-command "multimarkdown"))
 
 (provide 'init)
 ;;; init.el ends here

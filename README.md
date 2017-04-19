@@ -2,8 +2,6 @@ My new shiny emacs config (inspired by spacemacs).
 
 TODO:
 
-- markdown
-
 - language modes:
 
   - java
@@ -11,16 +9,14 @@ TODO:
     - debugger
 
   - typescript
+  
+  - angular
 
   - elisp
 
   - javascript
 
-  - groovy (?)
-
   - elisp и прочие лиспы
-
-  - scala
 
   - html
 
