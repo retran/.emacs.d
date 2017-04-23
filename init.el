@@ -344,7 +344,7 @@
       (remacs|refile-to
        (remacs|filename-for-date d))
       (org-mark-ring-goto)
-      (save-buffer))
+      (save-buffer)))
   (defun remacs|refile-to-specified-date ()
     (interactive)
     (remacs|refile (remacs|prompt-for-date)))
@@ -483,6 +483,9 @@
     (add-hook 'typescript-mode-hook #'setup-tide-mode)
     (setq tide-format-options '(:insertSpaceAfterFunctionKeywordForAnonymousFunctions t
                                 :placeOpenBraceOnNewLineForFunctions nil))))
+
+(use-package ng2-mode
+  :ensure t)
 
 ;; markdown
 (use-package markdown-mode
