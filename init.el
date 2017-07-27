@@ -8,11 +8,7 @@
 
 ;; create customization file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(unless (file-exists-p custom-file)
-  (write-region "" nil custom-file))
 (load custom-file)
-
-(add-to-list 'load-path "~/.emacs.d/vendor")
 
 ;; bootstrap use-package
 (require 'package)
@@ -66,8 +62,8 @@
 (column-number-mode t)
 (global-linum-mode t)
 (global-hl-line-mode)
-(setq show-paren-style 'parenthesis)
 (show-paren-mode 2)
+(setq show-paren-style 'parenthesis)
 
 (use-package color-theme
   :ensure t
@@ -81,7 +77,7 @@
       (use-package powerline
         :ensure t
         :config
-        (powerline-center-evil-theme))
+        (powerline-center-theme))
       (defun remacs|load-theme (theme)
         (load-theme theme t)
         (powerline-reset))
@@ -91,11 +87,6 @@
       (defun remacs|dark-theme ()
         (interactive)
         (remacs|load-theme 'gotham))
-      (general-define-key
-       :states '(normal visual)
-       :prefix "SPC"
-       "Tl" 'remacs|light-theme
-       "Td" 'remacs|dark-theme)
       (remacs|dark-theme))))
 
 (use-package ivy
@@ -106,18 +97,22 @@
     (setq ivy-use-virtual-buffers t)
     (use-package counsel
       :ensure t)
-    (ivy-mode t)))
+    (ivy-mode t)
+    (global-set-key (kbd "M-x") 'counsel-M-x)
+    (global-set-key (kbd "C-s") 'swiper)
+    (global-set-key (kbd "C-x C-f") 'counsel-find-file)
+    (global-set-key (kbd "<f1> f") 'counsel-describe-function)
+    (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+    (global-set-key (kbd "<f1> l") 'counsel-find-library)
+    (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+    (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+    (global-set-key (kbd "C-c g") 'counsel-git)
+    (global-set-key (kbd "C-c j") 'counsel-git-grep)
+    (global-set-key (kbd "C-c k") 'counsel-ag)
+    (global-set-key (kbd "C-x l") 'counsel-locate)
+    (global-set-key (kbd "C-c C-r") 'ivy-resume)))
 
-(use-package evil
-  :ensure t
-  :config
-  (progn
-    (setq sentence-end-double-space nil)
-    (evil-mode t)))
-
-(use-package avy
-  :ensure t)
-
+;; hydra?
 (use-package which-key
   :ensure t
   :diminish which-key-mode
@@ -130,71 +125,23 @@
   :ensure t
   :config
   (progn
-    (general-define-key
-     :states '(normal visual)
-     :prefix "SPC"
-     "0" 'winum-select-window-0-or-10
-     "1" 'winum-select-window-1
-     "2" 'winum-select-window-2
-     "3" 'winum-select-window-3
-     "4" 'winum-select-window-4
-     "5" 'winum-select-window-5
-     "6" 'winum-select-window-6
-     "7" 'winum-select-window-7
-     "8" 'winum-select-window-8
-     "9" 'winum-select-window-9
-     "wd" 'delete-window
-     "wv" 'split-window-vertically
-     "wh" 'split-window-horizontally
-     "wm" 'delete-other-windows
-     "wb" 'balance-windows
-     "wu" 'winner-undo
-     "wr" 'winner-redo)
     (winum-mode)
     (winner-mode)))
 
 (use-package linum
+  :ensure t)
+
+(use-package smartparens
   :ensure t
   :config
-  (progn
-    (use-package linum-relative
-      :ensure t)))
+  (require 'smartparens-config))
+
+(use-package rainbow-delimiters
+  :ensure t)
 
 (setq-default indent-tabs-mode nil)
 
-(use-package general
-  :ensure t
-  :config
-  (general-evil-setup t)
-  (general-define-key
-   :states '(normal visual)
-   :prefix "SPC"
-   ":" 'counsel-M-x
-   "/" 'swiper
-   ;; file
-   "ff" 'counsel-find-file
-   "gm" 'counsel-imenu
-   ;; formatting
-   "Fw" 'whitespace-cleanup
-   ;; buffer
-   "bd" 'kill-this-buffer
-   "bb" 'ivy-switch-buffer
-   "bn" 'next-buffer
-   "bp" 'previous-buffer
-   "<tab>" 'mode-line-other-buffer
-   ;; toggle
-   "tn" 'linum-mode
-   "tw" 'whitespace-mode
-   "tr" 'linum-relative-toggle
-   "tg" 'git-gutter+-mode
-   ;; navigation
-   "gc" 'avy-goto-char
-   "gl" 'avy-goto-line
-   "SPC" 'avy-goto-word-1
-   "gb" 'pop-global-mark
-   )
-)
-
+;; comapnymode
 (use-package company
   :ensure t
   :diminish company-mode
@@ -206,18 +153,22 @@
       :config
       (company-quickhelp-mode 1))))
 
+;; yasnippet
 (use-package yasnippet
   :ensure t
   :diminish yas-minor-mode
   :config
   (yas-global-mode 1))
 
+;; flycheck
 (use-package flycheck
   :ensure t
   :diminish flycheck-mode
   :config
-  (global-flycheck-mode))
+  (progn
+    (global-flycheck-mode)))
 
+;; projectile
 (use-package projectile
   :ensure t
   :config
@@ -226,16 +177,25 @@
     (use-package ggtags
       :ensure t)
     (use-package counsel-projectile
-      :ensure t))
-  (general-define-key
-   :states '(normal visual)
-   :prefix "SPC"
-   "fp" 'counsel-projectile
-   "ss" 'counsel-projectile-ag
-   "fS" 'projectile-save-project-buffers
-   "fc" 'projectile-switch-project
-   "fd" 'projectile-dired
-   "gt" 'projectile-find-tag))
+      :ensure t
+      :config
+      (counsel-projectile-on))))
+
+;; elisp-mode configuration
+(diminish 'eldoc-mode)
+
+(add-hook 'emacs-lisp-mode-hook 'company-mode)
+(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
+(add-hook 'emacs-lisp-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'emacs-lisp-mode-hook #'smartparens-mode)
+
+(add-hook 'lisp-interaction-mode-hook 'company-mode)
+(add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
+(add-hook 'lisp-interaction-mode-hook #'rainbow-delimiters-mode)
+(add-hook 'lisp-interaction-mode-hook #'smartparens-mode)
+
+(eval-after-load 'company
+  '(add-to-list 'company-backends 'company-elisp))
 
 ;; configure git modes
 (use-package magit
@@ -244,12 +204,6 @@
   (progn
     (use-package evil-magit
       :ensure t)
-    (general-define-key
-     :states '(normal visual)
-     :prefix "SPC"
-     "vv" 'magit-status
-     "vb" 'magit-blame
-     "vl" 'magit-log-buffer-file)
     (use-package git-gutter-fringe+
       :ensure t
       :diminish git-gutter+-mode
@@ -263,8 +217,25 @@
       :config
       (setq gac-ask-for-summary-p nil))))
 
+;; clojure
+(use-package cider
+  :ensure t
+  :config
+  (progn
+    (use-package clojure-cheatsheet
+      :ensure t
+      :config
+      (define-key clojure-mode-map (kbd "C-c C-h") #'clojure-cheatsheet))
+    (add-hook 'cider-repl-mode-hook #'company-mode)
+    (add-hook 'cider-mode-hook #'company-mode)
+    (add-hook 'cider-repl-mode-hook #'smartparens-mode)
+    (add-hook 'cider-mode-hook #'smartparens-mode)
+    (add-hook 'cider-repl-mode-hook #'rainbow-delimiters-mode)
+    (add-hook 'cider-mode-hook #'rainbow-delimiters-mode)))
+
+;; TODO reconfugure below
+
 ;; org-mode configuration
-;; org-evil !!!
 
 (use-package org
   :ensure t
@@ -366,104 +337,7 @@
     (remacs|open-log-entry (remacs|prompt-for-date)))
   (defun remacs|capture-task ()
     (interactive)
-    (org-capture nil "t"))
-  (general-define-key
-   :states '(normal visual)
-   :prefix "SPC"
-   "at" 'org-tags-view
-   "an" 'remacs|capture-task
-   "aa" 'remacs|open-log-entry
-   "ad" 'remacs|open-log-entry-to-specified-date
-   "ab" 'remacs|open-backlog)
-  (general-define-key
-   :keymaps 'org-mode-map
-   :states '(normal visual)
-   :prefix "SPC"
-   "ac" 'org-clock-in
-   "ao" 'org-clock-out
-   "arb" 'remacs|refile-to-backlog
-   "ara" 'remacs|refile
-   "ard" 'remacs|refile-to-specified-date))
-
-;; elisp-mode configuration
-(diminish 'eldoc-mode)
-
-(add-hook 'emacs-lisp-mode-hook 'company-mode)
-(add-hook 'emacs-lisp-mode-hook 'eldoc-mode)
-
-(add-hook 'lisp-interaction-mode-hook 'company-mode)
-(add-hook 'lisp-interaction-mode-hook 'eldoc-mode)
-
-(eval-after-load 'company
-  '(add-to-list 'company-backends 'company-elisp))
-
-;; java-mode configuration
-(use-package eclim
-  :ensure t
-  :init
-  (custom-set-variables
-   '(eclim-eclipse-dirs '("~/eclipse"))
-   '(eclim-executable "~/eclipse/eclim"))
-  :config
-  (progn
-    ;; https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Blang/java/funcs.el
-    (defun spacemacs/java-completing-dot ()
-      "Insert a period and show company completions."
-      (interactive "*")
-      (spacemacs//java-delete-horizontal-space)
-      (insert ".")
-      (company-emacs-eclim 'interactive))
-    ;; https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Blang/java/funcs.el
-    (defun spacemacs/java-completing-double-colon ()
-      "Insert double colon and show company completions."
-      (interactive "*")
-      (spacemacs//java-delete-horizontal-space)
-      (insert ":")
-      (let ((curr (point)))
-        (when (s-matches? (buffer-substring (- curr 2) (- curr 1)) ":")
-          (company-emacs-eclim 'interactive))))
-    ;; https://github.com/syl20bnr/spacemacs/blob/master/layers/%2Blang/java/funcs.el
-    (defun spacemacs//java-delete-horizontal-space ()
-      (when (s-matches? (rx (+ (not space)))
-                        (buffer-substring (line-beginning-position) (point)))
-        (delete-horizontal-space t)))
-    (setq help-at-pt-display-when-idle t
-          help-at-pt-timer-delay 0.1)
-    (help-at-pt-set-timer)
-    (global-eclim-mode)
-    (evil-define-key 'insert java-mode-map
-      (kbd ".") 'spacemacs/java-completing-dot
-      (kbd ":") 'spacemacs/java-completing-double-colon)
-    (general-define-key
-     :keymaps 'eclim-mode-map
-     :states '(normal visual)
-     :prefix "SPC"
-     ;; navigation
-     "gg" 'eclim-java-find-declaration
-     "gs" 'eclim-java-find-generic
-     "gr" 'eclim-java-find-references
-     "gT" 'eclim-java-find-type
-     "gc" 'eclim-java-call-hierarchy
-     "gh" 'eclim-java-hierarchy
-     ;; refactor
-     "rr" 'eclim-java-refactor-rename-symbol-at-point
-     "rm" 'eclim-java-refactor-move-class
-     "ri" 'eclim-java-import-organize
-     "re" 'eclim-java-implement
-     "rg" 'eclim-java-generate-getter
-     "rs" 'eclim-java-generate-setter
-     "rb" 'eclim-java-generate-getter-and-setter
-     "rc" 'eclim-java-constructor
-     ;; problems
-     "cc" 'eclim-problems-correct
-     "ca" 'eclim-problems
-     ;; formatting
-     "Ff" 'eclim-java-format)
-    (use-package company-emacs-eclim
-      :ensure t
-      :config
-      (company-emacs-eclim-setup)
-      (add-hook 'java-mode-hook 'company-mode))))
+    (org-capture nil "t")))
 
 ;; typescript
 (use-package tide
@@ -497,4 +371,6 @@
   :init (setq markdown-command "multimarkdown"))
 
 (provide 'init)
+
 ;;; init.el ends here
+
